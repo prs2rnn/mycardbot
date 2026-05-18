@@ -3,9 +3,6 @@ from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from core.database import bot_db
-from core.utils import (
-    extract_content_from_message,
-)
 from keyboards.user import (
     get_main_feedback_keyboard,
     get_main_keyboard,
@@ -14,6 +11,9 @@ from keyboards.user import (
 from states.user import FeedbackStates
 from utils.broadcast import send_notification, send_user_message
 from utils.content import load_html_content
+from utils.telegram import (
+    extract_content_from_message,
+)
 
 user_message_router = Router()
 

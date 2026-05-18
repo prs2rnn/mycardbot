@@ -24,7 +24,7 @@ class BotDatabase:
     async def initialize(self):
         async with self._lock:
             await self._db.executescript(
-                '''
+                """
                 CREATE TABLE IF NOT EXISTS users (
                     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     full_name TEXT,
@@ -48,7 +48,7 @@ class BotDatabase:
                     value TEXT,
                     updated_at REAL
                 );
-                '''
+                """
             )
             await self._db.commit()
 
@@ -57,12 +57,12 @@ class BotDatabase:
     ) -> bool:
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 INSERT OR IGNORE
                 INTO users (full_name, username, original_user_id, is_subscribed)
                 VALUES (?, ?, ?, ?);
-                ''',
-                (full_name, username, original_user_id, False),
+                """,
+                (full_name, f'@{username}', original_user_id, False),
             )
             await self._db.commit()
 
@@ -71,13 +71,13 @@ class BotDatabase:
     async def list_users(self) -> str:
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 SELECT full_name, username, original_user_id,
                 is_subscribed, is_ban,
                 strftime(\'%d.%m.%Y %H:%M\', started_at, \'unixepoch\', \'+3 hours\') as started_at
                 FROM users
                 ORDER BY started_at DESC;
-                '''
+                """
             )
             header = [i[0] for i in cursor.description]
             rows = await cursor.fetchall()
@@ -92,7 +92,7 @@ class BotDatabase:
         text = '👥 Список пользователей:\n\n'
         text += ', '.join(header)
         text += '\n'
-        for i, u in enumerate(users, start=1):
+        for i, u in enumerate(display_users, start=1):
             text += f'{i}. '
             text += ', '.join(map(str, u))
             text += '\n'
@@ -142,10 +142,10 @@ class BotDatabase:
     async def save_reply_mapping(self, group_message_id: int, user_id: int):
         async with self._lock:
             await self._db.execute(
-                '''
+                """
                 INSERT INTO reply_map (group_message_id, user_id)
                 VALUES (?, ?);
-                ''',
+                """,
                 (
                     group_message_id,
                     user_id,
@@ -156,11 +156,11 @@ class BotDatabase:
     async def get_user_id(self, group_message_id: int):
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 SELECT user_id
                 FROM reply_map
                 WHERE group_message_id = ?;
-                ''',
+                """,
                 (group_message_id,),
             )
             result = await cursor.fetchone()
@@ -174,18 +174,18 @@ class BotDatabase:
 
         if 'is_ban' not in column_names:
             await self._db.execute(
-                '''
+                """
                 ALTER TABLE users
                 ADD COLUMN is_ban BOOLEAN DEFAULT FALSE;
-                '''
+                """
             )
             await self._db.commit()
 
     async def check_is_banned(self, user_id: int) -> bool:
         cursor = await self._db.execute(
-            '''
+            """
             SELECT is_ban FROM users WHERE original_user_id = ?;
-            ''',
+            """,
             (user_id,),
         )
         result = await cursor.fetchone()
@@ -195,11 +195,11 @@ class BotDatabase:
     async def ban_user(self, user_id: int) -> bool:
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 UPDATE users
                 SET is_ban = True
                 WHERE original_user_id = ?;
-                ''',
+                """,
                 (user_id,),
             )
             await self._db.commit()
@@ -209,11 +209,11 @@ class BotDatabase:
     async def unban_user(self, user_id: int) -> bool:
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 UPDATE users
                 SET is_ban = False
                 WHERE original_user_id = ?;
-                ''',
+                """,
                 (user_id,),
             )
             await self._db.commit()
@@ -223,49 +223,49 @@ class BotDatabase:
     async def cleanup_old_mappings(self):
         async with self._lock:
             await self._db.execute(
-                '''
+                """
                 DELETE FROM reply_map
                 WHERE created_at < (
                     strftime('%s', 'now') - 2592000
                 );
-                '''
+                """
             )
             await self._db.commit()
 
     async def get_cache(self, key: str) -> tuple[str, float]:
         cursor = await self._db.execute(
-            '''
+            """
             SELECT value, updated_at FROM cache
             WHERE key = ?;
-            ''',
+            """,
             (key,),
         )
         result = await cursor.fetchone()
 
         return result
 
-    async def set_cache(self, key: text) -> bool:
+    async def set_cache(self, key: str) -> bool:
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 INSERT OR IGNORE
                 INTO cache (key, value, updated_at)
                 VALUES (?, ?, ?);
-                ''',
+                """,
                 (key, '{}', 0),
             )
             await self._db.commit()
 
             return cursor.rowcount > 0
 
-    async def update_cache(self, key: text, value: text, update_time: float) -> bool:
+    async def update_cache(self, key: str, value: str, update_time: float) -> bool:
         async with self._lock:
             cursor = await self._db.execute(
-                '''
+                """
                 UPDATE cache
                 SET value = ?, updated_at = ?
                 WHERE key = ?;
-                ''',
+                """,
                 (value, update_time, key),
             )
             await self._db.commit()
