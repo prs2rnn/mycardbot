@@ -1,51 +1,11 @@
 import asyncio
-import json
 import logging
 import random
-import time
-from pathlib import Path
 
-import httpx
 from aiogram import Bot
 from aiogram.types import Message, ReplyKeyboardRemove, User
 from core.config import setting
 from core.database import bot_db
-
-
-async def fetch_json(url: str):
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            response = await client.get(url)
-            response.raise_for_status()
-            return response.json()
-    except (httpx.TimeoutException, httpx.HTTPStatusError, httpx.RequestError) as e:
-        logging.error(f'Error occurred in fetch_json: {e}')
-    except Exception as e:
-        logging.error(f'Unexpected error occurred in fetch_json: {e}')
-
-
-async def get_changelog():
-    now = time.time()
-    await bot_db.set_cache('changelog')
-
-    data, last_update = await bot_db.get_cache('changelog')
-
-    if data and now - last_update < bot_db.cache_ttl:
-        logging.info('Retrieve changelog data from cache')
-        return json.loads(data)
-
-    url = 'https://api.github.com/repos/prs2rnn/mycardbot/releases'
-    data = await fetch_json(url)
-    if not data:
-        return []
-
-    result = [
-        {'version': r.get('name', 'unknown'), 'text': r.get('body', '')} for r in data
-    ][0]
-
-    await bot_db.update_cache('changelog', json.dumps(result), now)
-
-    return result
 
 
 def get_send_methods(bot: Bot, header: str, content_data: dict):
@@ -99,26 +59,26 @@ async def extract_content_from_message(message: Message) -> tuple[dict, str]:
     elif message.document:
         content_type = 'document'
         content_data['caption'] = (
-            message.caption or f"Документ: {message.document.file_name}"
+            message.caption or f'Документ: {message.document.file_name}'
         )
         content_data['document_file_id'] = message.document.file_id
         content_data['file_name'] = message.document.file_name
     elif message.video:
         content_type = 'video'
-        content_data['caption'] = message.caption or "Видео без описания"
+        content_data['caption'] = message.caption or 'Видео без описания'
         content_data['video_file_id'] = message.video.file_id
     elif message.video_note:
         content_type = 'video_note'
         content_data['video_note_file_id'] = message.video_note.file_id
     elif message.voice:
         content_type = 'voice'
-        content_data['caption'] = message.caption or "Голосовое сообщение"
+        content_data['caption'] = message.caption or 'Голосовое сообщение'
         content_data['voice_file_id'] = message.voice.file_id
         content_data['duration'] = message.voice.duration
     elif message.audio:
         content_type = 'audio'
         content_data['caption'] = (
-            message.caption or f"Аудио: {message.audio.title or 'Без названия'}"
+            message.caption or f'Аудио: {message.audio.title or "Без названия"}'
         )
         content_data['audio_file_id'] = message.audio.file_id
         content_data['title'] = message.audio.title
@@ -163,7 +123,7 @@ async def send_user_message(
 async def send_broadcast(
     bot: Bot, admin: User, users: list[Users], content_type: str, content_data: dict
 ):
-    header = f'📢 Новая рассылка от бота:\n\n'
+    header = '📢 Новая рассылка от бота:\n\n'
 
     send_methods = get_send_methods(bot, header, content_data)
     success, failure = 0, 0
