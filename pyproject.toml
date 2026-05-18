@@ -41,3 +41,6 @@ changelog_file = "CHANGELOG.md"
 upload_to_pypi = false
 major_on_zero = false
 allow_zero_version = true
+
+[tool.poetry.scripts]
+mycardbot = "mycardbot.__main__:run"
