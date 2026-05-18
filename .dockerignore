@@ -10,6 +10,8 @@ coverage/
 .cache/
 tmp/
 temp/
+data
+tests
 
 # Environment files
 .env
@@ -32,10 +34,3 @@ __pycache__/
 .venv/
 venv/
 env/
-
-# sqlite3 databases
-*.db
-*.sqlite3
-*.sqlite
-*.sdb
-*.db3

@@ -1,27 +1,20 @@
-FROM python:3.14.0-slim
+FROM python:3.14-slim
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV APP_HOME=/app
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1 \
+    PYTHONPATH=/app/src \
+    APP_HOME=/app
 
 WORKDIR $APP_HOME
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY pyproject.toml poetry.lock README.md LICENSE ./
+
+RUN pip install --no-cache-dir poetry && \
+    poetry install --only main --no-root
+
 COPY src/ ./src/
-
-RUN pip install --no-cache-dir poetry
-
-RUN poetry config virtualenvs.create false
-
-RUN poetry install --no-interaction --no-ansi --only=main
-
-RUN test -f src/mycardbot/__main__.py
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD python -c "import mycardbot" || exit 1
