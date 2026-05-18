@@ -21,11 +21,9 @@ RUN poetry config virtualenvs.create false
 
 RUN poetry install --no-interaction --no-ansi --only=main
 
-RUN test -f src/mycardbot/app.py
-
-# EXPOSE 8080
+RUN test -f src/mycardbot/__main__.py
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import sys; sys.exit(0)" || exit 1
+    CMD python -c "import mycardbot" || exit 1
 
-CMD ["python", "src/mycardbot/app.py"]
+CMD ["python", "-m", "mycardbot"]
