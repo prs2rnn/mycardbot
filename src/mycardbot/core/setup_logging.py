@@ -49,7 +49,7 @@ def setup_logger(debug: bool):
         console_log_level = logging.DEBUG
         file_log_level = logging.DEBUG
 
-    log_dir = Path('data')
+    log_dir = Path('logs')
     log_dir.mkdir(exist_ok=True)
 
     logger = logging.getLogger()
