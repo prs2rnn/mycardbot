@@ -1,6 +1,8 @@
 import html
+from contextlib import suppress
 
 from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
@@ -36,7 +38,8 @@ async def menu(callback: CallbackQuery) -> None:
 
 @admin_callback_router.callback_query(F.data == 'admin_broadcast', IsAdmin())
 async def proceed_broadcast(callback: CallbackQuery, state: FSMContext):
-    await callback.message.delete()
+    with suppress(TelegramBadRequest):
+        await callback.message.delete()
     text = load_html_content('admin_broadcast')
     await callback.message.answer(text, reply_markup=get_cancel_broadcast_keyboard())
     await state.set_state(BroadcastStates.waiting_for_message)

@@ -1,4 +1,7 @@
+from contextlib import suppress
+
 from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
@@ -42,7 +45,8 @@ async def feedback(callback: CallbackQuery, state: FSMContext):
 
 @user_callback_router.callback_query(F.data == 'send')
 async def proceed_feedback(callback: CallbackQuery, state: FSMContext):
-    await callback.message.delete()
+    with suppress(TelegramBadRequest):
+        await callback.message.delete()
     await callback.message.answer(
         'Напишите ваше сообщение', reply_markup=get_cancel_feedback_keyboard()
     )
