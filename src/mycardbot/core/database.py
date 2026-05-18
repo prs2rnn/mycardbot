@@ -10,6 +10,7 @@ class BotDatabase:
         self._db_path = Path('data') / db_name
         self._lock = asyncio.Lock()
         self._db = None
+        self.cache_ttl = 60 * 10
 
     async def connect(self):
         self._db = await aiosqlite.connect(self._db_path)
@@ -30,7 +31,8 @@ class BotDatabase:
                     username TEXT UNIQUE,
                     original_user_id TEXT UNIQUE NOT NULL,
                     started_at REAL DEFAULT ( strftime('%s', 'now') ),
-                    is_subscribed BOOLEAN DEFAULT FALSE
+                    is_subscribed BOOLEAN DEFAULT FALSE,
+                    is_ban BOOLEAN DEFAULT FALSE
                 );
 
                 CREATE TABLE IF NOT EXISTS reply_map (
@@ -39,6 +41,12 @@ class BotDatabase:
                     created_at REAL DEFAULT (
                         strftime('%s', 'now')
                     )
+                );
+
+                CREATE TABLE IF NOT EXISTS cache (
+                    key TEXT PRIMARY KEY,
+                    value TEXT,
+                    updated_at REAL
                 );
                 '''
             )
@@ -224,6 +232,46 @@ class BotDatabase:
             )
             await self._db.commit()
 
+    async def get_cache(self, key: str) -> tuple[str, float]:
+        cursor = await self._db.execute(
+            '''
+            SELECT value, updated_at FROM cache
+            WHERE key = ?;
+            ''',
+            (key,),
+        )
+        result = await cursor.fetchone()
+
+        return result
+
+    async def set_cache(self, key: text) -> bool:
+        async with self._lock:
+            cursor = await self._db.execute(
+                '''
+                INSERT OR IGNORE
+                INTO cache (key, value, updated_at)
+                VALUES (?, ?, ?);
+                ''',
+                (key, '{}', 0),
+            )
+            await self._db.commit()
+
+            return cursor.rowcount > 0
+
+    async def update_cache(self, key: text, value: text, update_time: float) -> bool:
+        async with self._lock:
+            cursor = await self._db.execute(
+                '''
+                UPDATE cache
+                SET value = ?, updated_at = ?
+                WHERE key = ?;
+                ''',
+                (value, update_time, key),
+            )
+            await self._db.commit()
+
+            return cursor.rowcount > 0
+
 
 bot_db = BotDatabase()
 
@@ -232,7 +280,6 @@ if __name__ == '__main__':
     async def main():
         await bot_db.connect()
         await bot_db.initialize()
-        await bot_db.add_user('a', 'aaa', 123)
         await bot_db.close()
 
     asyncio.run(main())

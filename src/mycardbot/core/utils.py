@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 import random
 import time
@@ -9,24 +10,6 @@ from aiogram import Bot
 from aiogram.types import Message, ReplyKeyboardRemove, User
 from core.config import setting
 from core.database import bot_db
-
-
-class MemoryCache:
-    def __init__(self):
-        self.cache = {'data': None, 'updated_at': 0}
-        self._cache_ttl = 60 * 10
-
-    def get(self, time):
-        if self.cache['data'] and time - self.cache['updated_at'] < self._cache_ttl:
-            logging.info('Retrieve changelog data from cache')
-            return self.cache['data']
-
-    def set(self, value, time):
-        self.cache['data'] = value
-        self.cache['updated_at'] = time
-
-
-cache = MemoryCache()
 
 
 def load_html_content(section: str) -> str:
@@ -48,10 +31,14 @@ async def fetch_json(url: str):
 
 
 async def get_changelog():
-    now = time.monotonic()
-    data = cache.get(now)
-    if data:
-        return data
+    now = time.time()
+    await bot_db.set_cache('changelog')
+
+    data, last_update = await bot_db.get_cache('changelog')
+
+    if data and now - last_update < bot_db.cache_ttl:
+        logging.info('Retrieve changelog data from cache')
+        return json.loads(data)
 
     url = 'https://api.github.com/repos/prs2rnn/mycardbot/releases'
     data = await fetch_json(url)
@@ -61,7 +48,9 @@ async def get_changelog():
     result = [
         {'version': r.get('name', 'unknown'), 'text': r.get('body', '')} for r in data
     ][0]
-    cache.set(result, now)
+
+    await bot_db.update_cache('changelog', json.dumps(result), now)
+
     return result
 
 
