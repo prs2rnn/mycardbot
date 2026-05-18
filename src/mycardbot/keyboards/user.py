@@ -8,6 +8,7 @@ def get_main_keyboard():
     builder.button(text='💬 Связаться c автором', callback_data='feedback')
     builder.button(text='🌐 Сайт', url='https://prs2rnn.github.io/')
     builder.button(text='📨 Рассылка', callback_data='broadcast')
+    builder.button(text='⭐ Донат', callback_data='donate')
     builder.button(text='📦 Что нового', callback_data='changelog')
     builder.adjust(2)
     return builder.as_markup()
@@ -67,5 +68,22 @@ def get_broadcast_keyboard(is_subscribed: bool):
         callback_data='subscribe' if not is_subscribed else 'unsubscribe',
     )
     builder.button(text='🔙 Вернуться на главную', callback_data='menu')
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def get_donate_keyboard():
+    builder = InlineKeyboardBuilder()
+    for amount in [10, 100, 1000]:
+        builder.button(text=f'{amount} ⭐', callback_data=f'{amount}_stars')
+    builder.button(text='🔙 Вернуться на главную', callback_data='menu')
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def get_invoice_keyboard(amount: int):
+    builder = InlineKeyboardBuilder()
+    builder.button(text=f'Оплата {amount} XTR', pay=True)
+    builder.button(text='Отменить оплату', callback_data='cancel_donate')
     builder.adjust(1)
     return builder.as_markup()

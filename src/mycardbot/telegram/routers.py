@@ -3,6 +3,7 @@ from aiogram import Router
 from mycardbot.handlers.admin.callback import admin_callback_router
 from mycardbot.handlers.admin.message import admin_message_router
 from mycardbot.handlers.user.callback import user_callback_router
+from mycardbot.handlers.user.donate import user_donate_router
 from mycardbot.handlers.user.message import user_message_router
 
 
@@ -13,5 +14,6 @@ def setup_router() -> Router:
         admin_callback_router,
         user_message_router,
         user_callback_router,
+        user_donate_router,
     )
     return router
