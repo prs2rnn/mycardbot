@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.4.3 (2026-05-18)
+
+### Bug Fixes
+
+- Suppress
+  ([`2af371e`](https://github.com/prs2rnn/mycardbot/commit/2af371e0a73b07f475ba0c44f3c40ebe8b9167e5))
+
+
 ## v0.4.2 (2026-05-18)
 
 
