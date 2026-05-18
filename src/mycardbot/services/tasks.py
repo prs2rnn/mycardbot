@@ -1,6 +1,6 @@
 import asyncio
 
-from core.database import bot_db
+from mycardbot.core.database import bot_db
 
 
 async def cleanup_task():

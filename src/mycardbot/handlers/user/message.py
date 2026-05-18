@@ -2,16 +2,17 @@ from aiogram import Bot, F, Router
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
-from core.database import bot_db
-from keyboards.user import (
+
+from mycardbot.core.database import bot_db
+from mycardbot.keyboards.user import (
     get_main_feedback_keyboard,
     get_main_keyboard,
     get_proceed_feedback_keyboard,
 )
-from services.broadcast import send_notification, send_user_message
-from states.user import FeedbackStates
-from utils.content import load_html_content
-from utils.telegram import (
+from mycardbot.services.broadcast import send_notification, send_user_message
+from mycardbot.states.user import FeedbackStates
+from mycardbot.utils.content import load_html_content
+from mycardbot.utils.telegram import (
     extract_content_from_message,
 )
 

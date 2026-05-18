@@ -3,14 +3,15 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
-from core.config import setting
-from core.database import bot_db
-from core.setup_logging import setup_logger, setup_telegram_logger
-from middlewares.check_ban import CheckUserIsBanned
-from middlewares.logging import LoggingMiddleware
-from services.tasks import cleanup_task
-from telegram.commands import set_commands
-from telegram.routers import setup_router
+
+from mycardbot.core.config import setting
+from mycardbot.core.database import bot_db
+from mycardbot.core.setup_logging import setup_logger, setup_telegram_logger
+from mycardbot.middlewares.check_ban import CheckUserIsBanned
+from mycardbot.middlewares.logging import LoggingMiddleware
+from mycardbot.services.tasks import cleanup_task
+from mycardbot.telegram.commands import set_commands
+from mycardbot.telegram.routers import setup_router
 
 
 async def main():

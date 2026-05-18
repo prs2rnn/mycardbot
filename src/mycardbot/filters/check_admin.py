@@ -1,6 +1,7 @@
 from aiogram.filters import BaseFilter
 from aiogram.types import TelegramObject
-from core.config import setting
+
+from mycardbot.core.config import setting
 
 
 class IsAdmin(BaseFilter):

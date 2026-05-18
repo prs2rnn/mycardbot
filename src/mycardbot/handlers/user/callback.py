@@ -1,8 +1,9 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from core.database import bot_db
-from keyboards.user import (
+
+from mycardbot.core.database import bot_db
+from mycardbot.keyboards.user import (
     get_broadcast_keyboard,
     get_cancel_feedback_keyboard,
     get_cv_keyboard,
@@ -11,9 +12,9 @@ from keyboards.user import (
     get_return_feedback_keyboard,
     get_return_keyboard,
 )
-from services.github import get_changelog
-from states.user import FeedbackStates
-from utils.content import load_html_content
+from mycardbot.services.github import get_changelog
+from mycardbot.states.user import FeedbackStates
+from mycardbot.utils.content import load_html_content
 
 user_callback_router = Router()
 

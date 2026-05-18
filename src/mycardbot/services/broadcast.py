@@ -4,9 +4,10 @@ import random
 
 from aiogram import Bot
 from aiogram.types import ReplyKeyboardRemove, User
-from core.config import setting
-from core.database import bot_db
-from utils.telegram import get_send_methods
+
+from mycardbot.core.config import setting
+from mycardbot.core.database import bot_db
+from mycardbot.utils.telegram import get_send_methods
 
 
 async def send_user_message(

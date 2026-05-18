@@ -2,8 +2,8 @@ import json
 import logging
 import time
 
-from core.database import bot_db
-from utils.api import fetch_json
+from mycardbot.core.database import bot_db
+from mycardbot.utils.api import fetch_json
 
 
 async def get_changelog():

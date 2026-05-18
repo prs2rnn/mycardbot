@@ -1,8 +1,9 @@
 from aiogram import Router
-from handlers.admin.callback import admin_callback_router
-from handlers.admin.message import admin_message_router
-from handlers.user.callback import user_callback_router
-from handlers.user.message import user_message_router
+
+from mycardbot.handlers.admin.callback import admin_callback_router
+from mycardbot.handlers.admin.message import admin_message_router
+from mycardbot.handlers.user.callback import user_callback_router
+from mycardbot.handlers.user.message import user_message_router
 
 
 def setup_router() -> Router:

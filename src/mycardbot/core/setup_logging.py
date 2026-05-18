@@ -5,11 +5,11 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from aiogram import Bot
-from core.config import setting
+
+from mycardbot.core.config import setting
 
 
 class TelegramHandler(logging.Handler):
-
     def __init__(self, bot: Bot):
         super().__init__()
         self.bot = bot
@@ -33,10 +33,7 @@ class TelegramHandler(logging.Handler):
 
 def get_formatter():
     return logging.Formatter(
-        '%(asctime)s | %(name)s | '
-        '%(levelname)s | '
-        '%(funcName)s:%(lineno)d | '
-        '%(message)s'
+        '%(asctime)s | %(name)s | %(levelname)s | %(funcName)s:%(lineno)d | %(message)s'
     )
 
 
