@@ -41,13 +41,15 @@ poetry install
 
 3. Setup environment
 
-- Create .env file
-- Create private channel and add the bot to it as admin
+- Create .env file and setup environment variables
+- Create private channel and group, adding bot to them as administrator
 
 4. Run bot
 
 ```bash
-poetry run python src/mycardbot/main.py
+poetry run mycardbot
+# OR
+poetry run python -m mycardbot
 ```
 
 ## Tech Stack
