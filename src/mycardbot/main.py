@@ -8,9 +8,9 @@ from core.database import bot_db
 from core.setup_commands import set_commands
 from core.setup_logging import setup_logger, setup_telegram_logger
 from core.setup_routers import setup_router
-from core.utils import cleanup_task
 from middlewares.check_ban import CheckUserIsBanned
 from middlewares.logging import LoggingMiddleware
+from utils.tasks import cleanup_task
 
 
 async def main():
@@ -50,5 +50,5 @@ async def main():
 if __name__ == '__main__':
     try:
         asyncio.run(main())
-    except (KeyboardInterrupt, SystemExit):
+    except KeyboardInterrupt, SystemExit:
         logging.error('Bot stopped manually!')
