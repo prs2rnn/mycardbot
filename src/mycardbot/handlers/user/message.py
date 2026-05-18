@@ -3,7 +3,7 @@ from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from mycardbot.core.database import bot_db
+from mycardbot.database.users import users_repo
 from mycardbot.keyboards.user import (
     get_main_feedback_keyboard,
     get_main_keyboard,
@@ -26,7 +26,7 @@ async def start(message: Message, bot: Bot) -> None:
 
     user = message.from_user
 
-    is_added = await bot_db.add_user(user.full_name, user.username, user.id)
+    is_added = await users_repo.add_user(user.full_name, user.username, user.id)
 
     if is_added:
         await send_notification(bot, user.full_name, user.username, user.id)

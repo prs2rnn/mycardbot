@@ -7,7 +7,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from mycardbot.core.config import setting
-from mycardbot.core.database import bot_db
+from mycardbot.database.mappings import map_repo
+from mycardbot.database.users import users_repo
 from mycardbot.filters.check_admin import IsAdmin
 from mycardbot.keyboards.admin import get_main_keyboard, get_proceed_broadcast_keyboard
 from mycardbot.services.broadcast import send_broadcast
@@ -63,7 +64,7 @@ async def confirm_broadcast(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     content_data = data.get('pending_content', {})
     content_type = data.get('content_type')
-    users = await bot_db.get_subscribed_users()
+    users = await users_repo.get_subscribed_users()
     admin = message.from_user
 
     await send_broadcast(bot, admin, users, content_type, content_data)
@@ -102,7 +103,7 @@ async def handle_confirm_broadcast(message: Message, state: FSMContext):
 )
 async def reply(message: Message, bot: Bot):
     group_message_id = message.reply_to_message.message_id
-    user_id = await bot_db.get_user_id(group_message_id)
+    user_id = await map_repo.get_user_id(group_message_id)
     if not user_id:
         return
     content_data, content_type = await extract_content_from_message(message)
@@ -127,7 +128,7 @@ async def ban_user(message: Message, command: CommandObject):
         await message.answer('Укажите ID пользователя, например <i>/ban 123</i>')
         return
 
-    is_ok = await bot_db.ban_user(user_id)
+    is_ok = await users_repo.ban_user(user_id)
 
     if is_ok:
         await message.answer(f'Пользователь с ID <i>{user_id}</i> забанен')
@@ -143,7 +144,7 @@ async def unban_user(message: Message, command: CommandObject):
         await message.answer('Укажите ID пользователя, например <i>/unban 123</i>')
         return
 
-    is_ok = await bot_db.unban_user(user_id)
+    is_ok = await users_repo.unban_user(user_id)
 
     if is_ok:
         await message.answer(f'Пользователь с ID <i>{user_id}</i> разбанен')

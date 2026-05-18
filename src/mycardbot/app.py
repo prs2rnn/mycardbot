@@ -4,8 +4,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 
 from mycardbot.core.config import setting
-from mycardbot.core.database import bot_db
 from mycardbot.core.setup_logging import setup_logger, setup_telegram_logger
+from mycardbot.database.connection import db
+from mycardbot.database.migrations import initialize, migrate
 from mycardbot.middlewares.check_ban import CheckUserIsBanned
 from mycardbot.middlewares.logging import LoggingMiddleware
 from mycardbot.services.tasks import cleanup_task
@@ -22,9 +23,9 @@ async def main():
         setup_telegram_logger(logger, bot)
         await set_commands(bot, setting.admin_ids)
 
-        await bot_db.connect()
-        await bot_db.initialize()
-        await bot_db.migrate()
+        await db.connect()
+        await initialize(db)
+        await migrate(db)
 
         cleanup = asyncio.create_task(cleanup_task())
 
@@ -39,7 +40,7 @@ async def main():
     except Exception:
         logger.exception('Critical error')
     finally:
-        await bot_db.close()
+        await db.close()
         if cleanup:
             cleanup.cancel()
         if bot:

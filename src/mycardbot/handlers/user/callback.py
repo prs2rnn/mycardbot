@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from mycardbot.core.database import bot_db
+from mycardbot.database.users import users_repo
 from mycardbot.keyboards.user import (
     get_broadcast_keyboard,
     get_cancel_feedback_keyboard,
@@ -67,7 +67,7 @@ async def cv(callback: CallbackQuery):
 @user_callback_router.callback_query(F.data == 'broadcast')
 async def broadcast(callback: CallbackQuery):
     user_id = callback.from_user.id
-    is_subscribed = await bot_db.is_subscribed(user_id)
+    is_subscribed = await users_repo.check_subscription(user_id)
     text = load_html_content('broadcast')
     await callback.message.edit_text(
         text, reply_markup=get_broadcast_keyboard(is_subscribed)
@@ -78,16 +78,16 @@ async def broadcast(callback: CallbackQuery):
 @user_callback_router.callback_query(F.data == 'unsubscribe')
 @user_callback_router.callback_query(F.data == 'subscribe')
 async def proceed_subscription(callback: CallbackQuery):
-    user_id = callback.from_user.id
-    is_subscribed = await bot_db.is_subscribed(user_id)
+    user = callback.from_user
+    is_subscribed = await users_repo.check_subscription(user.id)
 
     if is_subscribed is None:
-        await bot_db.add_user(
-            callback.from_user.full_name, callback.from_user.username, user_id
-        )
+        await users_repo.add_user(user.full_name, user.username, user.id)
 
     await (
-        bot_db.subscribe(user_id) if not is_subscribed else bot_db.unsubscribe(user_id)
+        users_repo.subscribe_user(user.id)
+        if not is_subscribed
+        else users_repo.unsubscribe_user(user.id)
     )
 
     await callback.message.edit_reply_markup(

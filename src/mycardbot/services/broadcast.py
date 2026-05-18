@@ -6,7 +6,7 @@ from aiogram import Bot
 from aiogram.types import ReplyKeyboardRemove, User
 
 from mycardbot.core.config import setting
-from mycardbot.core.database import bot_db
+from mycardbot.database.mappings import map_repo
 from mycardbot.utils.telegram import get_send_methods
 
 
@@ -23,7 +23,7 @@ async def send_user_message(
     send_methods = get_send_methods(bot, header, content_data)
     try:
         msg = await send_methods.get(content_type)(setting.group_id)
-        await bot_db.save_reply_mapping(msg.message_id, user.id)
+        await map_repo.save_reply_mapping(msg.message_id, user.id)
         await bot.send_message(
             user.id,
             f'Ваше сообщение #{msg.message_id} успешно отправлено',

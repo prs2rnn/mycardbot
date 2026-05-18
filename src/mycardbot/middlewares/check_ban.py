@@ -3,7 +3,7 @@ from typing import Any, Awaitable, Callable, Dict
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, User
 
-from mycardbot.core.database import bot_db
+from mycardbot.database.users import users_repo
 
 
 class CheckUserIsBanned(BaseMiddleware):
@@ -17,7 +17,7 @@ class CheckUserIsBanned(BaseMiddleware):
         if not user:
             return await handler(event, data)
 
-        is_banned = await bot_db.check_is_banned(user.id)
+        is_banned = await users_repo.check_ban(user.id)
 
         if is_banned:
             return
