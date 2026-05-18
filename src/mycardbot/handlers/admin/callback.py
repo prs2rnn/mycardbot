@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from core.database import bot_db
 from filters.check_admin import IsAdmin
-from keyboards.admin_keyboard import (
+from keyboards.admin import (
     get_cancel_broadcast_keyboard,
     get_main_keyboard,
     get_return_keyboard,

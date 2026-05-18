@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from core.database import bot_db
-from keyboards.user_keyboard import (
+from keyboards.user import (
     get_broadcast_keyboard,
     get_cancel_feedback_keyboard,
     get_cv_keyboard,

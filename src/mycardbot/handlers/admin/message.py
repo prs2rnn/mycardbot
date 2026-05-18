@@ -8,7 +8,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from core.config import setting
 from core.database import bot_db
 from filters.check_admin import IsAdmin
-from keyboards.admin_keyboard import get_main_keyboard, get_proceed_broadcast_keyboard
+from keyboards.admin import get_main_keyboard, get_proceed_broadcast_keyboard
 from states.admin import BroadcastStates
 from utils.broadcast import send_broadcast
 from utils.content import load_html_content

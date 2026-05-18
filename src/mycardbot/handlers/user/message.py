@@ -6,7 +6,7 @@ from core.database import bot_db
 from core.utils import (
     extract_content_from_message,
 )
-from keyboards.user_keyboard import (
+from keyboards.user import (
     get_main_feedback_keyboard,
     get_main_keyboard,
     get_proceed_feedback_keyboard,
