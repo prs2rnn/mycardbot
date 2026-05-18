@@ -1,4 +1,3 @@
-import asyncio
 import html
 import logging
 
@@ -8,11 +7,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from core.config import setting
 from core.database import bot_db
-from core.utils import extract_content_from_message, get_send_methods, send_broadcast
 from filters.check_admin import IsAdmin
 from keyboards.admin_keyboard import get_main_keyboard, get_proceed_broadcast_keyboard
 from states.admin import BroadcastStates
+from utils.broadcast import send_broadcast
 from utils.content import load_html_content
+from utils.telegram import extract_content_from_message, get_send_methods
 
 admin_message_router = Router()
 
@@ -112,10 +112,10 @@ async def reply(message: Message, bot: Bot):
     )
     try:
         await send_methods.get(content_type)(user_id)
-        await message.reply(f'Сообщение успешно отправлено пользователю!')
+        await message.reply('Сообщение успешно отправлено пользователю!')
     except Exception as e:
         logging.error(e)
-        await message.reply(f'Не удалось отправить сообщение пользователю')
+        await message.reply('Не удалось отправить сообщение пользователю')
 
 
 @admin_message_router.message(Command('ban'), IsAdmin())

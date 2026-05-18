@@ -1,15 +1,10 @@
-import logging
-
 from aiogram import Bot, F, Router
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
-from core.config import setting
 from core.database import bot_db
 from core.utils import (
     extract_content_from_message,
-    send_notification,
-    send_user_message,
 )
 from keyboards.user_keyboard import (
     get_main_feedback_keyboard,
@@ -17,6 +12,7 @@ from keyboards.user_keyboard import (
     get_proceed_feedback_keyboard,
 )
 from states.user import FeedbackStates
+from utils.broadcast import send_notification, send_user_message
 from utils.content import load_html_content
 
 user_message_router = Router()
