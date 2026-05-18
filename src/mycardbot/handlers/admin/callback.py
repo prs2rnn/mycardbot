@@ -4,7 +4,6 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from core.database import bot_db
-from core.utils import load_html_content
 from filters.check_admin import IsAdmin
 from keyboards.admin_keyboard import (
     get_cancel_broadcast_keyboard,
@@ -12,6 +11,7 @@ from keyboards.admin_keyboard import (
     get_return_keyboard,
 )
 from states.admin import BroadcastStates
+from utils.content import load_html_content
 
 admin_callback_router = Router()
 

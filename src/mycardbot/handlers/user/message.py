@@ -8,7 +8,6 @@ from core.config import setting
 from core.database import bot_db
 from core.utils import (
     extract_content_from_message,
-    load_html_content,
     send_notification,
     send_user_message,
 )
@@ -18,6 +17,7 @@ from keyboards.user_keyboard import (
     get_proceed_feedback_keyboard,
 )
 from states.user import FeedbackStates
+from utils.content import load_html_content
 
 user_message_router = Router()
 

@@ -12,12 +12,6 @@ from core.config import setting
 from core.database import bot_db
 
 
-def load_html_content(section: str) -> str:
-    file_path = Path(__file__).parent.parent / f'content/{section}.html'
-    text = file_path.read_text(encoding='utf-8')
-    return text if file_path.exists() else ''
-
-
 async def fetch_json(url: str):
     try:
         async with httpx.AsyncClient(timeout=10) as client:
