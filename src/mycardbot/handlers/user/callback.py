@@ -11,9 +11,9 @@ from keyboards.user import (
     get_return_feedback_keyboard,
     get_return_keyboard,
 )
+from services.github import get_changelog
 from states.user import FeedbackStates
 from utils.content import load_html_content
-from utils.github import get_changelog
 
 user_callback_router = Router()
 

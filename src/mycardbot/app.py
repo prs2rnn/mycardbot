@@ -10,7 +10,7 @@ from core.routers import setup_router
 from core.setup_logging import setup_logger, setup_telegram_logger
 from middlewares.check_ban import CheckUserIsBanned
 from middlewares.logging import LoggingMiddleware
-from utils.tasks import cleanup_task
+from services.tasks import cleanup_task
 
 
 async def main():

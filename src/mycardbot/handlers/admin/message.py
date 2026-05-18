@@ -9,8 +9,8 @@ from core.config import setting
 from core.database import bot_db
 from filters.check_admin import IsAdmin
 from keyboards.admin import get_main_keyboard, get_proceed_broadcast_keyboard
+from services.broadcast import send_broadcast
 from states.admin import BroadcastStates
-from utils.broadcast import send_broadcast
 from utils.content import load_html_content
 from utils.telegram import extract_content_from_message, get_send_methods
 

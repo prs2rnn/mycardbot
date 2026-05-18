@@ -8,8 +8,8 @@ from keyboards.user import (
     get_main_keyboard,
     get_proceed_feedback_keyboard,
 )
+from services.broadcast import send_notification, send_user_message
 from states.user import FeedbackStates
-from utils.broadcast import send_notification, send_user_message
 from utils.content import load_html_content
 from utils.telegram import (
     extract_content_from_message,
