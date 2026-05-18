@@ -8,7 +8,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from core.config import setting
 from core.database import bot_db
-from core.utils import extract_content_from_message, load_html_content, send_broadcast
+from core.utils import (
+    extract_content_from_message,
+    get_send_methods,
+    load_html_content,
+    send_broadcast,
+)
 from filters.check_admin import IsAdmin
 from keyboards.admin_keyboard import get_main_keyboard, get_proceed_broadcast_keyboard
 from states.admin import BroadcastStates
@@ -103,11 +108,14 @@ async def reply(message: Message, bot: Bot):
     user_id = await bot_db.get_user_id(group_message_id)
     if not user_id:
         return
+    content_data, content_type = await extract_content_from_message(message)
+    if not content_data or not content_type:
+        return
+    send_methods = get_send_methods(
+        bot, f'💬 Ответ на сообщение #{group_message_id}:\n\n', content_data
+    )
     try:
-        await bot.send_message(
-            user_id,
-            text=f'💬 Ответ на сообщение #{group_message_id}:\n\n{message.text}',
-        )
+        await send_methods.get(content_type)(user_id)
         await message.reply(f'Сообщение успешно отправлено пользователю!')
     except Exception as e:
         logging.error(e)
