@@ -28,3 +28,21 @@ def get_proceed_broadcast_keyboard():
     builder.button(text='Отменить')
     builder.adjust(1)
     return builder.as_markup(resize_keyboard=True)
+
+
+def get_paginated_keyboard(total_pages: int, page_number: int = 1):
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text='◀️ Назад' if page_number > 1 else ' ',
+        callback_data=f'page_{page_number - 1}' if page_number > 1 else 'none',
+    )
+    builder.button(text=f'{page_number}/{total_pages}', callback_data='current')
+    builder.button(
+        text='Вперед ▶️' if page_number < total_pages else ' ',
+        callback_data=f'page_{page_number + 1}'
+        if page_number < total_pages
+        else 'none',
+    )
+    builder.button(text='🔙 Вернуться в главное меню', callback_data='admin_menu')
+    builder.adjust(3, 1)
+    return builder.as_markup()
