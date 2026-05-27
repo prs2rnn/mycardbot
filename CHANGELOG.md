@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v0.5.0 (2026-05-27)
+
+### Bug Fixes
+
+- Ban forbidden for administrators
+  ([`168c25b`](https://github.com/prs2rnn/mycardbot/commit/168c25b1674f7df3e99b037bf44d09f9657be097))
+
+### Features
+
+- Pagination for user list
+  ([`65b7769`](https://github.com/prs2rnn/mycardbot/commit/65b77690cb5483793fe40c01408472a416b7243c))
+
+### Refactoring
+
+- Replace utils.telegram to bot.send_copy
+  ([`d3ff87e`](https://github.com/prs2rnn/mycardbot/commit/d3ff87e2a0b22f83a5df0ce18d037dc9a2537e76))
+
+
 ## v0.4.3 (2026-05-18)
 
 ### Bug Fixes
