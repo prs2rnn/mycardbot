@@ -121,6 +121,12 @@ async def ban_user(message: Message, command: CommandObject):
         await message.answer('Укажите ID пользователя, например <code>/ban 123</code>')
         return
 
+    if user_id in map(str, setting.admin_ids):
+        await message.answer(
+            'Указанный ID пользователя в списке администраторов. Действие отменено.'
+        )
+        return
+
     is_ok = await users_repo.ban_user(user_id)
 
     if is_ok:
