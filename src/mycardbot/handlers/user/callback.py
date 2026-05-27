@@ -114,6 +114,4 @@ async def changelog(callback: CallbackQuery):
     else:
         text += f'*{release["version"]}*\n{release["text"]}\n\n'
 
-    await callback.message.edit_text(
-        text, reply_markup=get_return_keyboard(), parse_mode='Markdown'
-    )
+    await callback.message.edit_text(text, reply_markup=get_return_keyboard())
