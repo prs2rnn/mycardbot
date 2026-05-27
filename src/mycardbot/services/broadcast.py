@@ -7,22 +7,24 @@ from aiogram.types import ReplyKeyboardRemove, User
 
 from mycardbot.core.config import setting
 from mycardbot.database.mappings import map_repo
-from mycardbot.utils.telegram import get_send_methods
 
 
-async def send_user_message(
-    bot: Bot, user: User, content_type: str, content_data: dict
-):
+async def send_user_message(bot: Bot, user: User, message_id: int):
     header = (
-        f'👤 Новое сообщение от пользователя:\n\n'
+        f'👤 Новое сообщение от пользователя\n\n'
         f'Имя: {user.full_name}\n'
         f'Username: @{user.username}\n'
         f'ID: {user.id}\n\n'
     )
 
-    send_methods = get_send_methods(bot, header, content_data)
     try:
-        msg = await send_methods.get(content_type)(setting.group_id)
+        await bot.send_message(setting.group_id, header)
+        msg = await bot.copy_message(
+            setting.group_id,
+            user.id,
+            message_id,
+        )
+
         await map_repo.save_reply_mapping(msg.message_id, user.id)
         await bot.send_message(
             user.id,
@@ -38,12 +40,9 @@ async def send_user_message(
         )
 
 
-async def send_broadcast(
-    bot: Bot, admin: User, users: list[User], content_type: str, content_data: dict
-):
-    header = '📢 Новая рассылка от бота:\n\n'
+async def send_broadcast(bot: Bot, admin: User, users: list[User], message_id: int):
+    header = '📢 Новая рассылка от бота\n\n'
 
-    send_methods = get_send_methods(bot, header, content_data)
     success, failure = 0, 0
 
     await bot.send_message(
@@ -60,7 +59,8 @@ async def send_broadcast(
     try:
         for user_id in users:
             try:
-                await send_methods.get(content_type)(user_id)
+                await bot.send_message(user_id, header)
+                await bot.copy_message(user_id, admin.id, message_id)
                 success += 1
                 pause = random.uniform(0.8, 1.8)
                 await asyncio.sleep(pause)
@@ -78,7 +78,8 @@ async def send_broadcast(
         await bot.send_message(admin.id, 'Произошла ошибка при отправке рассылки')
 
     # archive to channel
-    await send_methods.get(content_type)(setting.channel_id)
+    await bot.send_message(setting.channel_id, header)
+    await bot.copy_message(setting.channel_id, admin.id, message_id)
 
 
 async def send_notification(bot: Bot, full_name: str, username: str, user_id: int):

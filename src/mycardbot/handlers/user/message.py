@@ -12,9 +12,6 @@ from mycardbot.keyboards.user import (
 from mycardbot.services.broadcast import send_notification, send_user_message
 from mycardbot.states.user import FeedbackStates
 from mycardbot.utils.content import load_html_content
-from mycardbot.utils.telegram import (
-    extract_content_from_message,
-)
 
 user_message_router = Router()
 
@@ -46,11 +43,7 @@ async def cancel_proceed_feedback(message: Message, state: FSMContext):
     StateFilter(FeedbackStates.waiting_for_message),
 )
 async def handle_proceed_feedback(message: Message, state: FSMContext):
-    content_data, content_type = await extract_content_from_message(message)
-    if not content_data or not content_type:
-        return
-
-    await state.update_data(pending_content=content_data, content_type=content_type)
+    await state.update_data(pending_message_id=message.message_id)
 
     await message.answer(
         'Подтвердите или отмените отправку',
@@ -65,11 +58,10 @@ async def handle_proceed_feedback(message: Message, state: FSMContext):
 )
 async def confirm_feedback(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
-    content_data = data.get('pending_content', {})
-    content_type = data.get('content_type')
+    message_id = data.get('pending_message_id')
     user = message.from_user
 
-    await send_user_message(bot, user, content_type, content_data)
+    await send_user_message(bot, user, message_id)
 
     await state.clear()
     text = load_html_content('start')
