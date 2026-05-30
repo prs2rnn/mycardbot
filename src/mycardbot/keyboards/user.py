@@ -69,3 +69,23 @@ def get_broadcast_keyboard(is_subscribed: bool):
     builder.button(text='🔙 Вернуться на главную', callback_data='menu')
     builder.adjust(1)
     return builder.as_markup()
+
+
+def get_changelog_paginated_keyboard(
+    version: str, total_pages: int, page_number: int = 0
+):
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text='◀️ Назад' if page_number > 0 else ' ',
+        callback_data=f'changelog_{page_number - 1}' if page_number > 0 else 'none',
+    )
+    builder.button(text=version, callback_data='current')
+    builder.button(
+        text='Вперед ▶️' if page_number < total_pages - 1 else ' ',
+        callback_data=f'changelog_{page_number + 1}'
+        if page_number < total_pages - 1
+        else 'none',
+    )
+    builder.button(text='🔙 Вернуться на главную', callback_data='menu')
+    builder.adjust(3, 1)
+    return builder.as_markup()

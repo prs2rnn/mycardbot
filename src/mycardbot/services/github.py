@@ -23,7 +23,7 @@ async def get_changelog():
 
     result = [
         {'version': r.get('name', 'unknown'), 'text': r.get('body', '')} for r in data
-    ][0]
+    ]
 
     await cache_repo.update_cache('changelog', json.dumps(result), now)
 
