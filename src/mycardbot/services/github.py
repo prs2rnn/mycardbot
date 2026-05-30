@@ -4,6 +4,7 @@ import time
 
 from mycardbot.database.cache import cache_repo
 from mycardbot.utils.api import fetch_json
+from mycardbot.utils.format import markdown_to_html
 
 
 async def get_changelog():
@@ -22,8 +23,12 @@ async def get_changelog():
         return []
 
     result = [
-        {'version': r.get('name', 'unknown'), 'text': r.get('body', '')} for r in data
-    ][0]
+        {
+            'version': r.get('name', 'unknown'),
+            'text': markdown_to_html(r.get('body', '')),
+        }
+        for r in data
+    ]
 
     await cache_repo.update_cache('changelog', json.dumps(result), now)
 

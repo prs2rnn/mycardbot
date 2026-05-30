@@ -9,6 +9,7 @@ from mycardbot.database.users import users_repo
 from mycardbot.keyboards.user import (
     get_broadcast_keyboard,
     get_cancel_feedback_keyboard,
+    get_changelog_paginated_keyboard,
     get_cv_keyboard,
     get_main_feedback_keyboard,
     get_main_keyboard,
@@ -110,12 +111,45 @@ async def proceed_subscription(callback: CallbackQuery, bot: Bot):
 
 
 @user_callback_router.callback_query(F.data == 'changelog')
-async def changelog(callback: CallbackQuery):
-    release = await get_changelog()
-    text = 'Последние обновления:\n\n'
-    if not release:
-        text += 'Не удалось получить информацию от сервера'
+async def handle_changelog(callback: CallbackQuery):
+    releases = await get_changelog()
+    total_pages = len(releases)
+    if not releases:
+        text = 'Не удалось получить информацию от сервера'
     else:
-        text += f'*{release["version"]}*\n{release["text"]}\n\n'
+        release = releases[0]
+        text = f'{release["text"]}\n\n'
 
-    await callback.message.edit_text(text, reply_markup=get_return_keyboard())
+    version = release['version'] if releases else ''
+
+    await callback.message.edit_text(
+        text, reply_markup=get_changelog_paginated_keyboard(version, total_pages)
+    )
+
+
+@user_callback_router.callback_query(F.data.startswith('changelog_'))
+async def handle_changelog_pagination(callback: CallbackQuery) -> None:
+    page_number = int(callback.data.split('_')[-1])
+    releases = await get_changelog()
+    total_pages = len(releases)
+
+    if not releases:
+        text = 'Не удалось получить информацию от сервера'
+    else:
+        release = releases[page_number]
+        text = f'{release["text"]}\n\n'
+
+    version = release['version'] if releases else ''
+
+    await callback.message.edit_text(
+        text,
+        reply_markup=get_changelog_paginated_keyboard(
+            version, total_pages, page_number
+        ),
+    )
+    await callback.answer()
+
+
+@user_callback_router.callback_query((F.data == 'current') | (F.data == 'none'))
+async def handle_changelog_empty_pagination(callback: CallbackQuery) -> None:
+    await callback.answer()
