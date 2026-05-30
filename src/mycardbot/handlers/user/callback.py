@@ -118,7 +118,7 @@ async def handle_changelog(callback: CallbackQuery):
         text = 'Не удалось получить информацию от сервера'
     else:
         release = releases[0]
-        text = f'*{release["version"]}*\n{release["text"]}\n\n'
+        text = f'{release["text"]}\n\n'
 
     version = release['version'] if releases else ''
 
@@ -137,7 +137,7 @@ async def handle_changelog_pagination(callback: CallbackQuery) -> None:
         text = 'Не удалось получить информацию от сервера'
     else:
         release = releases[page_number]
-        text = f'*{release["version"]}*\n{release["text"]}\n\n'
+        text = f'{release["text"]}\n\n'
 
     version = release['version'] if releases else ''
 
