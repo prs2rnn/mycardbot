@@ -1,6 +1,6 @@
 from contextlib import suppress
 
-from aiogram import F, Router
+from aiogram import Bot, F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
@@ -15,6 +15,7 @@ from mycardbot.keyboards.user import (
     get_return_feedback_keyboard,
     get_return_keyboard,
 )
+from mycardbot.services.broadcast import get_image_on_subscribe
 from mycardbot.services.github import get_changelog
 from mycardbot.states.user import FeedbackStates
 from mycardbot.utils.content import load_html_content
@@ -81,7 +82,7 @@ async def broadcast(callback: CallbackQuery):
 
 @user_callback_router.callback_query(F.data == 'unsubscribe')
 @user_callback_router.callback_query(F.data == 'subscribe')
-async def proceed_subscription(callback: CallbackQuery):
+async def proceed_subscription(callback: CallbackQuery, bot: Bot):
     user = callback.from_user
     is_subscribed = await users_repo.check_subscription(user.id)
 
@@ -94,14 +95,17 @@ async def proceed_subscription(callback: CallbackQuery):
         else users_repo.unsubscribe_user(user.id)
     )
 
-    await callback.message.edit_reply_markup(
-        reply_markup=get_broadcast_keyboard(not is_subscribed)
-    )
+    if not is_subscribed:
+        await callback.answer('Вы подписались на рассылку!')
+        await get_image_on_subscribe(bot, user.id)
+    else:
+        await callback.answer('Вы отписались от рассылки!')
 
-    await callback.answer(
-        'Вы подписались на рассылку!'
-        if not is_subscribed
-        else 'Вы отписались от рассылки!'
+    await callback.message.delete()
+
+    text = load_html_content('broadcast')
+    await callback.message.answer(
+        text, reply_markup=get_broadcast_keyboard(not is_subscribed)
     )
 
 

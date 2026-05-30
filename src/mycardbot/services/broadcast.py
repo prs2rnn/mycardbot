@@ -1,9 +1,10 @@
 import asyncio
 import logging
 import random
+from pathlib import Path
 
 from aiogram import Bot
-from aiogram.types import ReplyKeyboardRemove, User
+from aiogram.types import FSInputFile, ReplyKeyboardRemove, User
 
 from mycardbot.core.config import setting
 from mycardbot.database.mappings import map_repo
@@ -94,3 +95,37 @@ async def send_notification(bot: Bot, full_name: str, username: str, user_id: in
         logging.info('Notification sent to private channel')
     except Exception as e:
         logging.error(f'Error: {e}')
+
+
+async def get_image_on_subscribe(bot: Bot, user_id: int):
+    file_path = Path(__file__).parent.parent / 'img/the-world-is-yours.mp4'
+    file_id_path = Path(__file__).parent.parent / f'img/{file_path.name}.file_id'
+    caption = 'Если вы получили это сообщение, значит вы подписались на рассылку!'
+
+    if not file_path.exists():
+        logging.error(f'File {file_path.name} not found!')
+        return
+
+    local_animation = FSInputFile(file_path)
+
+    if not file_id_path.exists():
+        msg = await bot.send_animation(user_id, local_animation, caption=caption)
+        file_id = msg.animation.file_id
+        file_id_path.write_text(file_id, encoding='utf-8')
+        logging.info('file_id has been saved!')
+    else:
+        file_id = file_id_path.read_text(encoding='utf-8')
+        try:
+            await bot.send_animation(user_id, file_id, caption=caption)
+            logging.info('file_id has been extracted!')
+        except Exception:
+            logging.error('File_id is not valid!')
+            file_id_path.unlink(missing_ok=True)
+
+
+if __name__ == '__main__':
+
+    async def main():
+        await get_image_on_subscribe()
+
+    asyncio.run(main())
